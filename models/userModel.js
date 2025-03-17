@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
  },
+ avatar: {
+   type: String,
+   default: "",
+ },
  lastlogin: {
     type: Date,
     default: Date.now
@@ -22,10 +26,17 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
  },
- resetPasswordToken: String,
- resetPasswordExpiresAt: Date,
- verificationToken: String,
- verificationTokenExpiresAt: Date,
+ admin: {
+   type: Boolean,
+   default: false
+ },
+ verificationToken: {
+   type: String,
+ }  
+//  resetPasswordToken: String,
+//  resetPasswordExpiresAt: Date,
+
+//  verificationTokenExpiresAt: Date,
 
 },{timestamps:true})
 
