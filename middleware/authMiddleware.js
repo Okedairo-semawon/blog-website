@@ -1,5 +1,6 @@
-import { User } from "../models/userModel"
-import {verify} from JsonWebToken;
+import { User } from "../models/userModel.js"
+import jwt from "jsonwebtoken";
+let { verify } = jwt
 export const protectAuth = async (req, res, next ) => {
     if (req.headers.authorization && 
         req.headers.authorization.startsWith("Bearer")
