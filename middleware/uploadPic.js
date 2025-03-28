@@ -1,14 +1,19 @@
 import multer from 'multer';
+import {dirname} from 'path';
+import { fileURLToPath } from 'url';
 import path from 'path';
+
+const  __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, '../uploads', filename))
+        cb(null, path.join(__dirname, "../Uploads"))
     },
     filename: (req, file, cb) => {
-        cb(null, `${Date.now()} -${file.originalname}`)
+        cb(null, `${Date.now()}-${file.originalname}`)
     }
 })
-
 const uploadPic = multer({
     storage: storage,
     limits: {
