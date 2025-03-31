@@ -104,3 +104,22 @@ export const updateProfilePic = (req, res, next) => {
     }
     
 }
+
+export const deleteUserProfile = async (req, res, next) => {
+    // enable soft delete
+    try {
+        let user = await User.findByIdAndUpdate(req.user._id, {isDeleted: true}, {new: true});
+        if (!user) {
+            let error = new Error ('User not found')
+        } else {
+            let filename = user.avatar;
+            fileRemover(user.avatar);
+    //         await user.deleteOne();
+
+        } return res. status(204).json({message: " User deleted successfully"})
+    } catch (error) {
+        next (error);
+    }
+
+
+};
