@@ -108,15 +108,30 @@ export const updateProfilePic = (req, res, next) => {
 export const deleteUserProfile = async (req, res, next) => {
     // enable soft delete
     try {
-        let user = await User.findByIdAndUpdate(req.user._id, {isDeleted: true}, {new: true});
+        let user = await User.findById(req.params.user._id, {isDeleted: true}, {new: true});
         if (!user) {
             let error = new Error ('User not found')
-        } else {
-            let filename = user.avatar;
-            fileRemover(user.avatar);
-    //         await user.deleteOne();
+        } 
+        
+    const postsToDelete = await Post.find({ user: user._id });
+    const postIdsToDelete = postsToDelete.map((post) => post._id);
 
-        } return res. status(204).json({message: " User deleted successfully"})
+    await Comment.deleteMany({
+      post: { $in: postIdsToDelete },
+    });
+
+    await Post.deleteMany({
+      _id: { $in: postIdsToDelete },
+    });
+
+    postsToDelete.forEach((post) => {
+      fileRemover(post.photo);
+    });
+
+    await user.remove();
+    fileRemover(user.avatar);
+
+    return res.status(204).json({ message: "User is deleted successfully" });
     } catch (error) {
         next (error);
     }
