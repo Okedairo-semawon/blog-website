@@ -19,7 +19,7 @@ import{User} from '../models/userModel.js'
 //         const hashedPassword = await bycryptjs.hash(password, 10)
 //         const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
 //         const user = new User({
-//             email,
+//             email, 
 //             password: hashedPassword,
 //             name,
 //             verificationToken,
@@ -71,7 +71,7 @@ export const signup = async (req, res, next) => {
             name: user.name,
             email: user.email,
             verified: user.verified,
-            password: user.password,
+            admin: user.admin,
             token: await user.generateJwt()
         })
     } catch(error) {
@@ -91,13 +91,13 @@ export const login = async (req, res, next) => {
             throw new Error ("Email not found")
         }
         if (await user.comparepassword(password)) {
-            return res.status(201).json({
+            return res.status(200).json({
                 _id: user._id,
                 avatar: user.avatar,
                 name: user.name,
                 email: user.email,
                 verified: user.verified,
-                password: user.password,
+                admin: user.admin,
                 token: await user.generateJwt()
             })
         } else {

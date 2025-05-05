@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const postSchema = new mongooseSchema({
+const PostSchema = new  mongoose.Schema({
     body: {
         type: Object,
         required: true
@@ -17,28 +17,29 @@ const postSchema = new mongooseSchema({
         type: String,
         required: true,
         unique: true
-    },
+    },  
     tags: {
         type: [String]
     },
     user: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
     photo: {
         type: String,
         required: false
     },
-    categories: [{ type: Schema.Types.ObjectId, ref: "PostCategories" }],
+    categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "PostCategories" }],
 
 }, {timeStamp: true, toJSON: {virtuals: true}, });
 
-postSchema.virtual({
-    ref: 'comments',
+PostSchema.virtual('comments',{
+    ref: 'Comment',
     localField: '_id',
     foreignField: 'post'
 });
 
-const post = mongoose.model('post', postSchema);
+const Post = mongoose.model('Post', PostSchema);
 
-export default post;
+export default Post;
+ 

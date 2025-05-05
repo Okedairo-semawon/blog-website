@@ -1,4 +1,3 @@
-import express from "express";
 import { User } from "../models/userModel.js";
 import uploadPic from "../middleware/uploadPic.js";
 import fileRemover from "../utils/fileRemover.js";
@@ -103,7 +102,44 @@ export const updateProfilePic = (req, res, next) => {
         next(error);
     }
     
-}
+};
+
+export const getAllUsers = async (req, res, next) => {
+    try {
+      const filter = req.query.searchKeyword;
+      let where = {};
+      if (filter) {
+        where.email = { $regex: filter, $options: "i" };
+      }
+      let query = User.find(where);
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = parseInt(req.query.limit) || 10;
+      const skip = (page - 1) * pageSize;
+      const total = await User.find(where).countDocuments();
+      const pages = Math.ceil(total / pageSize);
+  
+      res.header({
+        "x-filter": filter,
+        "x-totalcount": JSON.stringify(total),
+        "x-currentpage": JSON.stringify(page),
+        "x-pagesize": JSON.stringify(pageSize),
+        "x-totalpagecount": JSON.stringify(pages),
+      });
+  
+      if (page > pages) {
+        return res.json([]);
+      }
+  
+      const result = await query
+        .skip(skip)
+        .limit(pageSize)
+        .sort({ updatedAt: "desc" });
+  
+      return res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  };
 
 export const deleteUserProfile = async (req, res, next) => {
     // enable soft delete
@@ -135,6 +171,4 @@ export const deleteUserProfile = async (req, res, next) => {
     } catch (error) {
         next (error);
     }
-
-
 };
