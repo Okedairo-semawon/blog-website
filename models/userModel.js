@@ -50,8 +50,8 @@ const userSchema = new mongoose.Schema({
 
 // Pre-save mongoose middleware that handles encrypting the user's password and removing the confirmPassword field
 userSchema.pre('save', async function (next) {
-   if (this.isModified('password')) {
-      this.password = await hash(this.password, 10);
+   if (this.isModified('password') || this.isNew) {
+      this.password = await bcrypt.hash(this.password, 10);
       return next()
    }
    return next();
@@ -62,7 +62,7 @@ userSchema.methods.generateJwt = async function () {
       expiresIn: '30d'})
 };
 userSchema.methods.comparepassword = async function (enteredPassword) {
-   return await compare(enteredPassword, this.password)
+   return await bcrypt.compare(enteredPassword, this.password)
 };
 
 export const User = mongoose.model('User', userSchema);
