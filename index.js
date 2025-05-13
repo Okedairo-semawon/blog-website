@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import cors from 'cors'
+import cors from "cors"
 import {connectDB} from './configuration/DBconnect.js';
 import authRoutes from './Routes/authRoute.js'
 import {errorResponseHandler} from './middleware/errorHandler.js'
@@ -13,6 +13,16 @@ import swaggerUi from 'swagger-ui-express';
 dotenv.config();
 
 const app = express();
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+
+const allowedOrigins = [
+  'https://blog-post-cift.vercel.app',
+  'http://localhost:5000'
+];
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true, 
+}));
 
 
 // Swagger configuration
@@ -25,9 +35,8 @@ const swaggerOptions = {
         description: 'API documentation for the Blog app',
       },
       servers: [
-        {
-          url: 'http://localhost:3000/api',
-        },
+        {url: 'http://localhost:5000/api'},
+        { url: 'https://blog-website-i99w.onrender.com' }
       ],
     },
     apis: ['./Routes/*.js'], // Point to where your route files are
@@ -52,8 +61,11 @@ app.use(invalidPathHandler);
 app.use (errorResponseHandler);
 
 
-app.listen(PORT, () => {
-    connectDB();
-    console.log('backend is running on port:', PORT)
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Backend is running on port: ${PORT}`);
+  });
+}).catch((error) => {
+  console.error('DB connection failed:', error);
 });
 
